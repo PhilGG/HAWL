@@ -1,0 +1,10 @@
+{
+  "domain": "wake_up_light",
+  "name": "Wake Up Light",
+  "version": "1.0.0",
+  "documentation": "https://github.com/yourusername/wake_up_light",
+  "dependencies": [],
+  "codeowners": ["@yourusername"],
+  "requirements": [],
+  "iot_class": "local_polling"
+}

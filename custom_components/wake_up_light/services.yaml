@@ -1,0 +1,9 @@
+wake_up_light.set_lights:
+  description: "Set the lights for the wake-up light"
+  fields:
+    entity_id:
+      description: "Entity ID of the light(s)"
+      example: "light.bedroom"
+    duration:
+      description: "Duration in minutes for the wake-up light"
+      example: 5

@@ -1,0 +1,10 @@
+input_datetime:
+  wake_up_time:
+    name: Heure de réveil
+    has_date: false
+    has_time: true
+
+input_boolean:
+  wake_up_alarm:
+    name: Réveil on/off
+    initial: false
