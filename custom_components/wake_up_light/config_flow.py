@@ -28,15 +28,13 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.error(f"Error creating entry: {e}")
                 errors["base"] = "cannot_create_entry"
 
-        schema = {
-            CONF_LIGHTS: list,
-            CONF_DURATION: DEFAULT_DURATION,
-        }
-
-        _LOGGER.info("Schema created successfully")
-
         return self.async_show_form(
-            step_id="user", data_schema=schema, errors=errors
+            step_id="user",
+            data_schema={
+                CONF_LIGHTS: [],
+                CONF_DURATION: DEFAULT_DURATION,
+            },
+            errors=errors
         )
 
     @staticmethod
@@ -53,13 +51,10 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             _LOGGER.info(f"Options flow user input received: {user_input}")
             return self.async_create_entry(title="", data=user_input)
 
-        schema = {
-            CONF_LIGHTS: self.config_entry.options.get(CONF_LIGHTS, []),
-            CONF_DURATION: self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION),
-        }
-
-        _LOGGER.info("Options schema created successfully")
-
         return self.async_show_form(
-            step_id="init", data_schema=schema
+            step_id="init",
+            data_schema={
+                CONF_LIGHTS: self.config_entry.options.get(CONF_LIGHTS, []),
+                CONF_DURATION: self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION),
+            }
         )
