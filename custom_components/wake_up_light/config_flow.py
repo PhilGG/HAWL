@@ -1,8 +1,9 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-import logging
+from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
+        _LOGGER.info("Schema created successfully")
+
         return self.async_show_form(
             step_id="user", data_schema=schema, errors=errors
         )
@@ -45,8 +48,10 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
 
         schema = vol.Schema({
             vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): vol.All(cv.ensure_list, [cv.entity_id]),
-            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
+            vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
         })
+
+        _LOGGER.info("Options schema created successfully")
 
         return self.async_show_form(
             step_id="init", data_schema=schema
