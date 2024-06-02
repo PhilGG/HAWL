@@ -1,19 +1,10 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-import logging
 from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
+import logging
 
 _LOGGER = logging.getLogger(__name__)
-
-def validate_lights(value):
-    """Validate that the value is a list of entity IDs."""
-    if not isinstance(value, list):
-        raise vol.Invalid("Must be a list")
-    for item in value:
-        if not isinstance(item, str):
-            raise vol.Invalid("Each item must be a string")
-    return value
 
 class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
@@ -23,6 +14,14 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.info("Starting user step in config flow.")
         if user_input is not None:
             try:
+                if not isinstance(user_input.get(CONF_LIGHTS), list):
+                    errors["base"] = "invalid_lights"
+                    raise ValueError("CONF_LIGHTS must be a list")
+                for item in user_input[CONF_LIGHTS]:
+                    if not isinstance(item, str):
+                        errors["base"] = "invalid_lights"
+                        raise ValueError("Each light must be a string")
+
                 _LOGGER.info(f"User input received: {user_input}")
                 return self.async_create_entry(title="Wake Up Light", data=user_input)
             except Exception as e:
@@ -30,7 +29,7 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_create_entry"
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): validate_lights,
+            vol.Required(CONF_LIGHTS): list,
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
@@ -55,7 +54,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): validate_lights,
+            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): list,
             vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
         })
 
