@@ -7,4 +7,7 @@
   "codeowners": ["@PhilGG"],
   "requirements": [],
   "iot_class": "local_polling"
+  "logo": "https://raw.githubusercontent.com/PhilGG/HAWL/master/logo.png",
+  "icon": "https://raw.githubusercontent.com/PhilGG/HAWL/master/logo.png",
+  "config_flow": true
 }
