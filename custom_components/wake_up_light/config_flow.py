@@ -1,4 +1,3 @@
-import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
@@ -14,13 +13,14 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.info("Starting user step in config flow.")
         if user_input is not None:
             try:
-                if not isinstance(user_input.get(CONF_LIGHTS), list):
-                    errors["base"] = "invalid_lights"
-                    raise ValueError("CONF_LIGHTS must be a list")
-                for item in user_input[CONF_LIGHTS]:
-                    if not isinstance(item, str):
-                        errors["base"] = "invalid_lights"
-                        raise ValueError("Each light must be a string")
+                # Validation manuelle des données
+                lights = user_input.get(CONF_LIGHTS, [])
+                if not isinstance(lights, list) or not all(isinstance(item, str) for item in lights):
+                    raise ValueError("Invalid lights configuration")
+
+                duration = user_input.get(CONF_DURATION, DEFAULT_DURATION)
+                if not isinstance(duration, int) or duration <= 0:
+                    raise ValueError("Invalid duration configuration")
 
                 _LOGGER.info(f"User input received: {user_input}")
                 return self.async_create_entry(title="Wake Up Light", data=user_input)
@@ -28,10 +28,10 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.error(f"Error creating entry: {e}")
                 errors["base"] = "cannot_create_entry"
 
-        schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): list,
-            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
-        })
+        schema = {
+            CONF_LIGHTS: list,
+            CONF_DURATION: DEFAULT_DURATION,
+        }
 
         _LOGGER.info("Schema created successfully")
 
@@ -53,10 +53,10 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             _LOGGER.info(f"Options flow user input received: {user_input}")
             return self.async_create_entry(title="", data=user_input)
 
-        schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): list,
-            vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
-        })
+        schema = {
+            CONF_LIGHTS: self.config_entry.options.get(CONF_LIGHTS, []),
+            CONF_DURATION: self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION),
+        }
 
         _LOGGER.info("Options schema created successfully")
 
