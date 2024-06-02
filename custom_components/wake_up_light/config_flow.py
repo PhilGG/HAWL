@@ -2,7 +2,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 import logging
-from .const import DOMAIN, CONF_DURATION, DEFAULT_DURATION
+from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_create_entry"
 
         schema = vol.Schema({
-            vol.Required("example_field"): str,
+            vol.Required(CONF_LIGHTS): vol.All(cv.ensure_list, [cv.entity_id]),
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
@@ -44,7 +44,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required("example_field", default=self.config_entry.options.get("example_field", "")): str,
+            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): vol.All(cv.ensure_list, [cv.entity_id]),
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
