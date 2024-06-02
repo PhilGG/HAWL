@@ -1,25 +1,26 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.helpers import config_validation as cv
-from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain="wake_up_light"):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
         errors = {}
         _LOGGER.info("Starting user step in config flow.")
         if user_input is not None:
-            _LOGGER.info(f"User input received: {user_input}")
-            return self.async_create_entry(title="Wake Up Light", data=user_input)
+            try:
+                _LOGGER.info(f"User input received: {user_input}")
+                return self.async_create_entry(title="Wake Up Light", data=user_input)
+            except Exception as e:
+                _LOGGER.error(f"Error creating entry: {e}")
+                errors["base"] = "cannot_create_entry"
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): cv.ensure_list,
-            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
+            vol.Required("example_field"): str,
         })
 
         return self.async_show_form(
@@ -31,7 +32,6 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry):
         return WakeUpLightOptionsFlow(config_entry)
 
-
 class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         self.config_entry = config_entry
@@ -42,8 +42,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): cv.ensure_list,
-            vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
+            vol.Required("example_field", default=self.config_entry.options.get("example_field", "")): str,
         })
 
         return self.async_show_form(
