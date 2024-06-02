@@ -2,10 +2,11 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 import logging
+from .const import DOMAIN, CONF_DURATION, DEFAULT_DURATION
 
 _LOGGER = logging.getLogger(__name__)
 
-class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain="wake_up_light"):
+class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
@@ -21,6 +22,7 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain="wake_up_light"):
 
         schema = vol.Schema({
             vol.Required("example_field"): str,
+            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
         return self.async_show_form(
@@ -43,6 +45,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
 
         schema = vol.Schema({
             vol.Required("example_field", default=self.config_entry.options.get("example_field", "")): str,
+            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
         return self.async_show_form(
