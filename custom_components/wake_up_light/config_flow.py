@@ -1,11 +1,19 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.helpers import config_validation as cv
-from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
 import logging
+from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
 
 _LOGGER = logging.getLogger(__name__)
+
+def validate_lights(value):
+    """Validate that the value is a list of entity IDs."""
+    if not isinstance(value, list):
+        raise vol.Invalid("Must be a list")
+    for item in value:
+        if not isinstance(item, str):
+            raise vol.Invalid("Each item must be a string")
+    return value
 
 class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
@@ -22,7 +30,7 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_create_entry"
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): vol.All(cv.ensure_list, [cv.string]),
+            vol.Required(CONF_LIGHTS): validate_lights,
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
@@ -47,7 +55,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): vol.All(cv.ensure_list, [cv.string]),
+            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): validate_lights,
             vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
         })
 
