@@ -3,13 +3,18 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN, CONF_LIGHTS, CONF_DURATION, DEFAULT_DURATION
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
         errors = {}
+        _LOGGER.info("Starting user step in config flow.")
         if user_input is not None:
+            _LOGGER.info(f"User input received: {user_input}")
             return self.async_create_entry(title="Wake Up Light", data=user_input)
 
         schema = vol.Schema({
@@ -33,6 +38,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         if user_input is not None:
+            _LOGGER.info(f"Options flow user input received: {user_input}")
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
