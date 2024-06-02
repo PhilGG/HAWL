@@ -18,8 +18,8 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title="Wake Up Light", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): vol.All(cv.ensure_list, [cv.entity_id]),
-            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): cv.positive_int,
+            vol.Required(CONF_LIGHTS): cv.ensure_list,
+            vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
         return self.async_show_form(
@@ -42,8 +42,8 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): vol.All(cv.ensure_list, [cv.entity_id]),
-            vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): cv.positive_int,
+            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): cv.ensure_list,
+            vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
         })
 
         return self.async_show_form(
