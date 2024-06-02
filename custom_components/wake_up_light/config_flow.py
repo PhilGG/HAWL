@@ -7,14 +7,6 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-def validate_lights(value):
-    """Validate that the value is a list of entity IDs."""
-    if not isinstance(value, list):
-        raise vol.Invalid("Must be a list")
-    for item in value:
-        cv.entity_id(item)
-    return value
-
 class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
@@ -30,7 +22,7 @@ class WakeUpLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_create_entry"
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS): validate_lights,
+            vol.Required(CONF_LIGHTS): vol.All(cv.ensure_list, [cv.string]),
             vol.Optional(CONF_DURATION, default=DEFAULT_DURATION): vol.Coerce(int),
         })
 
@@ -55,7 +47,7 @@ class WakeUpLightOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): validate_lights,
+            vol.Required(CONF_LIGHTS, default=self.config_entry.options.get(CONF_LIGHTS, [])): vol.All(cv.ensure_list, [cv.string]),
             vol.Optional(CONF_DURATION, default=self.config_entry.options.get(CONF_DURATION, DEFAULT_DURATION)): vol.Coerce(int),
         })
 
