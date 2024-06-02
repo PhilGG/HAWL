@@ -9,5 +9,5 @@
   "iot_class": "local_polling",
   "logo": "https://raw.githubusercontent.com/PhilGG/HAWL/main/logo.png",
   "icon": "https://raw.githubusercontent.com/PhilGG/HAWL/main/logo.png",
-  "config_flow": true
+  "config_flow": false
 }

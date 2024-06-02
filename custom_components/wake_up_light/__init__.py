@@ -1,12 +1,24 @@
 import logging
+import yaml
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+def load_config():
+    try:
+        with open('/config/wake_up_light.yaml', 'r') as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        _LOGGER.error(f"Error loading configuration: {e}")
+        return {}
+
 async def async_setup(hass: HomeAssistant, config: dict):
     _LOGGER.info("Setting up Wake Up Light integration.")
+    config_data = load_config()
+    if config_data:
+        hass.data[DOMAIN] = config_data
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):

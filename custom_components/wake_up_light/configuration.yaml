@@ -1,0 +1,5 @@
+wake_up_light:
+  lights:
+    - light.living_room
+    - light.bedroom
+  duration: 4

@@ -2,7 +2,7 @@ wake_up_light:
   alias: "Réveil Lumineux"
   sequence:
     - repeat:
-        count: "{{ (state_attr('wake_up_light_config', 'duration') | int * 60 / 12) | int }}"
+        count: "{{ (state_attr('wake_up_light', 'duration') | int * 60 / 12) | int }}"
         sequence:
           - condition: state
             entity_id: input_boolean.wake_up_alarm
@@ -10,7 +10,7 @@ wake_up_light:
           - service: light.turn_on
             data_template:
               entity_id: >
-                {{ state_attr('wake_up_light_config', 'lights') | join(', ') }}
+                {{ state_attr('wake_up_light', 'lights') | join(', ') }}
               brightness_pct: "{{ repeat.index * 5 }}"
           - delay: '00:00:12'
           - choose:
